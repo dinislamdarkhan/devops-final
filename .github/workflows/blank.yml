@@ -23,9 +23,9 @@ jobs:
     steps:
       - name: 'Create env file'
         run: |
-          echo "${{ secrets.PEM_TEXT }}" > .pem
+          echo "${{ secrets.PEM_TEXT }}" > dinislam.pem
       - name: Ansible CLI
         uses: tomasnorre/ansible-cli-client@0.0.2
         with:
           # Command to execute
-          command: ansible-playbook --private-key .pem -i ansible/inventory ansible/playbook-dinislam.yml -u ubuntu
+          command: ansible-playbook --private-key dinislam.pem -i ansible/inventory ansible/playbook-dinislam.yml -u ubuntu
