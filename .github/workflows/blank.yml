@@ -28,4 +28,4 @@ jobs:
         uses: tomasnorre/ansible-cli-client@0.0.2
         with:
           # Command to execute
-          command: ansible-playbook --private-key dinislam.pem -i ansible/inventory ansible/playbook-dinislam.yml -u ubuntu
+          command: ansible-playbook --private-key dinislam.pem -i inventory playbook-dinislam.yml -u ubuntu
