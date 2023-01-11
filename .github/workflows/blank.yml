@@ -28,7 +28,7 @@ jobs:
           echo "${{ secrets.PEM_TEXT }}" > dinislam.pem
       - name: 'Check pem'
         run: |
-          echo dinislam.pem
+          cat dinislam.pem
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
