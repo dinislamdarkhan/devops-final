@@ -27,7 +27,15 @@ jobs:
         run: |
           echo "${{ secrets.PEM_TEXT }}" > dinislam.pem
           chmod 400 dinislam.pem
-      - name: Ansible CLI
-        uses: tomasnorre/ansible-cli-client@0.0.2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
         with:
-          command: ansible-playbook -i ansible/inventory ansible/playbook-dinislam.yml -u ubuntu
+          python-version: 3.9
+      - name: Install dependencies Including Ansible
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f test-requirements.txt ]; then pip install -r test-requirements.txt; fi
+      - name: run playbook
+        run: |
+          sshpass -p ubuntu ssh ubuntu@13.57.176.48 ansible-playbook -i ansible/inventory ansible/playbook-dinislam.yml -u ubuntu
