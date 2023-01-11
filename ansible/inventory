@@ -1,5 +1,2 @@
 [dev]
 13.57.176.48 ansible_user=ubuntu ansible_password=ubuntu
-
-[all:vars]
-ansible_python_interpreter=/usr/bin/python3
