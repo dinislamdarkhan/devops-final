@@ -1,43 +1,70 @@
 - hosts: all
-  become: yes
-  become_method: sudo
+  remote_user: ubuntu
+  become: true
   tasks:
-  - name: update cache
-    apt: name=python3-software-properties state=present update_cache=yes cache_valid_time=43200
-  - name: install packages
-    apt: name={{item}} state=latest
-    with_items:
-      - python3-pip
-      - python3-dev
-      - nginx
-
-- hosts: all
-  vars:
-    inventory_hostname: 13.233.166.62
-    
-  handlers:
-    - name: Restart Nginx
+    - name: install dependencies
+      apt:
+        name: "{{item}}"
+        state: present
+        update_cache: yes
+      loop:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg-agent
+        - software-properties-common
+    - name: add GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    - name: add docker repository to apt
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+    - name: install docker
+      apt:
+        name: "{{item}}"
+        state: latest
+        update_cache: yes
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+    - name: check docker is active
       service:
-        name: nginx
-        state: restarted
-  tasks:
-  - name: clone repo
-    git:
-      repo: 'https://github.com/dinislamdarkhan/docker-hello-world.git'
-      dest: /home/ubuntu/docker-hello-world
-      update: yes
-  - name: Install virtualenv via pip
-    pip:
-      name: virtualenv
-      executable: pip3
-  - name: Manually create the initial virtualenv
-    command:
-      cmd: python3 -m virtualenv /home/ubuntu/docker-hello-world/env
-      creates: "/home/ubuntu/docker-hello-world/env"
-  
-  - name: install modules in a virtualenv
-    pip:
-      requirements: /home/ubuntu/docker-hello-world/requirements.txt
-      virtualenv: /home/ubuntu/docker-hello-world/env
-      virtualenv_python: python3.5
-    notify: Restart Nginx
+        name: docker
+        state: started
+        enabled: yes
+    - name: Ensure group "docker" exists
+      ansible.builtin.group:
+        name: docker
+        state: present
+    - name: adding ubuntu to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+    - name: Install docker-compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: 'u+x,g+x'
+    - name: Change file ownership, group and permissions
+      ansible.builtin.file:
+        path: /usr/local/bin/docker-compose
+        owner: ubuntu
+        group: ubuntu
+    - name: Clone of a single branch
+      ansible.builtin.git:
+        repo: https://github.com/lsapan/docker-swarm-demo.git
+        dest: ~/docker-swarm-demo
+        single_branch: yes
+        version: master
+    - name: Run container
+      become: True	
+      shell:
+        cmd: "docker-compose up"
+        chdir: ~/docker-swarm-demo
+
+     
+
