@@ -33,4 +33,4 @@ jobs:
       - name: Ansible CLI
         uses: tomasnorre/ansible-cli-client@0.0.2
         with:
-          command: ansible-playbook --private-key ansible/dinislam.pem -i ansible/inventory ansible/playbook-dinislam.yml -u ubuntu
+          command: ansible-playbook -i ansible/inventory ansible/playbook-dinislam.yml -u ubuntu
