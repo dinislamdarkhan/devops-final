@@ -27,6 +27,9 @@ jobs:
         run: |
           echo "${{ secrets.PEM_TEXT }}" > dinislam.pem
           chmod 400 dinislam.pem
+      - name: Publish Site
+        run: |
+            chmod -R 400 ansible/dinislam.pem
       - name: Ansible CLI
         uses: tomasnorre/ansible-cli-client@0.0.2
         with:
