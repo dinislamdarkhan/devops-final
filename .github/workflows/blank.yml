@@ -26,6 +26,7 @@ jobs:
       - name: 'Create env file'
         run: |
           echo "${{ secrets.PEM_TEXT }}" > dinislam.pem
+          chmod 400 dinislam.pem
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
