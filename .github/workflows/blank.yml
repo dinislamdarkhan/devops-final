@@ -24,14 +24,15 @@ jobs:
       - name: 'Create env file'
         run: |
           echo "${{ secrets.PEM_TEXT }}" > dinislam.pem
-      - name: Execute Ansible Playbook
-        # You may pin to the exact commit or the version.
-        # uses: saubermacherag/ansible-playbook-docker-action@6504ab82647581a928477ecb9c6d52f11fc6843f
-        uses: saubermacherag/ansible-playbook-docker-action@v1.4
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
         with:
-          # Name of the playbook in your workspace.
-          playbookName: ansible/playbook-dinislam.yml
-          # Name of the inventory file to use.
-          inventoryFile: ansible/inventory
-          # name of the requirements file to use.
-          keyFile: dinislam.pem
+          python-version: 3.9
+      - name: Install dependencies Including Ansible
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f test-requirements.txt ]; then pip install -r test-requirements.txt; fi
+      - name: run playbook
+        run: |
+          ansible-playbook --private-key dinislam.pem -i ansible/inventory ansible/playbook-dinislam.yml
