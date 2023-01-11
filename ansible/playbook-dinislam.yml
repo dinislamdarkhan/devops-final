@@ -1,0 +1,43 @@
+- hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: update cache
+    apt: name=python3-software-properties state=present update_cache=yes cache_valid_time=43200
+  - name: install packages
+    apt: name={{item}} state=latest
+    with_items:
+      - python3-pip
+      - python3-dev
+      - nginx
+
+- hosts: all
+  vars:
+    inventory_hostname: 13.233.166.62
+    
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+  tasks:
+  - name: clone repo
+    git:
+      repo: 'https://github.com/dinislamdarkhan/docker-hello-world.git'
+      dest: /home/ubuntu/docker-hello-world
+      update: yes
+  - name: Install virtualenv via pip
+    pip:
+      name: virtualenv
+      executable: pip3
+  - name: Manually create the initial virtualenv
+    command:
+      cmd: python3 -m virtualenv /home/ubuntu/docker-hello-world/env
+      creates: "/home/ubuntu/docker-hello-world/env"
+  
+  - name: install modules in a virtualenv
+    pip:
+      requirements: /home/ubuntu/docker-hello-world/requirements.txt
+      virtualenv: /home/ubuntu/docker-hello-world/env
+      virtualenv_python: python3.5
+    notify: Restart Nginx
