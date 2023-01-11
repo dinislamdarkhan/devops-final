@@ -24,8 +24,14 @@ jobs:
       - name: 'Create env file'
         run: |
           echo "${{ secrets.PEM_TEXT }}" > dinislam.pem
-      - name: Ansible CLI
-        uses: tomasnorre/ansible-cli-client@0.0.2
+      - name: Execute Ansible Playbook
+        # You may pin to the exact commit or the version.
+        # uses: saubermacherag/ansible-playbook-docker-action@6504ab82647581a928477ecb9c6d52f11fc6843f
+        uses: saubermacherag/ansible-playbook-docker-action@v1.4
         with:
-          # Command to execute
-          command: ansible-playbook --private-key dinislam.pem -i inventory playbook-dinislam.yml -u ubuntu
+          # Name of the playbook in your workspace.
+          playbookName: playbook-dinislam.yml
+          # Name of the inventory file to use.
+          inventoryFile: inventory
+          # name of the requirements file to use.
+          keyFile: dinislam.pem
