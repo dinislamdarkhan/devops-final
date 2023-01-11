@@ -30,8 +30,8 @@ jobs:
         uses: saubermacherag/ansible-playbook-docker-action@v1.4
         with:
           # Name of the playbook in your workspace.
-          playbookName: playbook-dinislam.yml
+          playbookName: /ansible/playbook-dinislam.yml
           # Name of the inventory file to use.
-          inventoryFile: inventory
+          inventoryFile: /ansible/inventory
           # name of the requirements file to use.
           keyFile: dinislam.pem
